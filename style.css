@@ -220,3 +220,27 @@ h1 {
     color: #8e8e93;
 }
 
+.log-btn {
+    position: relative;
+    z-index: 10; /* Brings the button to the front */
+    cursor: pointer;
+    pointer-events: auto; /* Ensures it accepts taps */
+}
+
+/* Ensure the bottom nav doesn't overlap the last row of fish */
+#fishGrid {
+    padding-bottom: 120px !important;
+}
+
+/* --- FEATURE 4: LAZY LOADING & SKELETONS --- */
+.fish-img {
+    background-color: #1a1d24; /* Dark placeholder color */
+    min-height: 150px;
+    display: block;
+    transition: opacity 0.3s ease-in;
+}
+
+/* Add a slight shimmer effect to the cards while loading */
+.card {
+    contain: paint; /* Helps iPhone performance */
+}

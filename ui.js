@@ -1,3 +1,12 @@
+// TOP OF UI.JS
+const Haptics = {
+    light: () => { if (navigator.vibrate) navigator.vibrate(10); },
+    medium: () => { if (navigator.vibrate) navigator.vibrate(30); },
+    success: () => { if (navigator.vibrate) navigator.vibrate([20, 50, 20]); }, 
+    warning: () => { if (navigator.vibrate) navigator.vibrate([100, 30, 100]); }
+};
+
+// ... everything else (showPage, updateStats) follows below ...
 // Function to switch between the main Dex and the Log view
 function showPage(pageId) {
     const dexPage = document.getElementById('dex-page');
@@ -45,3 +54,13 @@ function updateStats() {
         `;
     }
 }
+
+// Feature 4: Performance & Image Handling
+document.addEventListener("DOMContentLoaded", () => {
+    // This ensures images that fail to load don't break the layout
+    document.addEventListener('error', function (e) {
+        if (e.target.tagName.toLowerCase() === 'img') {
+            e.target.src = "https://via.placeholder.com/150?text=Photo+Pending";
+        }
+    }, true);
+});

@@ -12,7 +12,12 @@ function render(data = speciesList) {
     grid.innerHTML = data.map(fish => `
         <div class="card">
             <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
-            <img class="fish-img" src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" onerror="this.src='https://via.placeholder.com/150?text=Fish'">
+            
+	  <img class="fish-img" 
+     src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" 
+     loading="lazy" 
+     alt="${fish.name}"
+     onerror="this.src='https://via.placeholder.com/150?text=Fish'">
             <div class="card-info">
                 <div class="fish-name">${fish.name}</div>
                 <div class="category">${fish.cat}</div>
