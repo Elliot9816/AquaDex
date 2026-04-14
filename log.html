@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>My Log - AquaDex</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="header">
+        <h1>My Discoveries</h1>
+        <p id="statsCounter" style="margin-bottom: 10px;">Found: 0 / 500</p>
+        <select id="sortSelect" onchange="renderLog()" style="padding: 8px; border-radius: 10px; border: none; background: #1a1d24; color: white;">
+            <option value="dateLogged">Recently Found</option>
+            <option value="name">Name (A-Z)</option>
+            <option value="rarity">Rarity (Rarest)</option>
+        </select>
+        <br><br>
+        <a href="index.html" class="nav-link">← Return to Dex</a>
+    </div>
+
+    <div id="logGrid" class="grid"></div>
+
+    <script src="log.js"></script>
+</body>
+</html>
