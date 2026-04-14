@@ -159,3 +159,43 @@ h1 {
     border-color: #007bff;
 }
 
+/* --- BOTTOM NAVIGATION --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: rgba(26, 29, 36, 0.95);
+    backdrop-filter: blur(10px); /* iPhone-style glass effect */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #333;
+    padding-bottom: env(safe-area-inset-bottom); /* Fix for home bar */
+    z-index: 100;
+}
+
+.nav-item {
+    text-align: center;
+    color: #8e8e93;
+    font-size: 10px;
+    font-weight: bold;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item span {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+.nav-item.active {
+    color: #4da3ff;
+}
+
+/* Adjust grid padding so the bottom nav doesn't cover fish */
+.grid {
+    padding-bottom: 100px; 
+}
+

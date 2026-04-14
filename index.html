@@ -12,39 +12,50 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="dex-page">
         <div class="header">
-        <h1>AquaDex</h1>
-        <input type="text" id="searchBar" placeholder="Search 500+ species..." onkeyup="searchFish()">
-        
-        <div class="filter-container">
-            <button class="filter-btn active" onclick="filterByCategory('All')">All</button>
-            <button class="filter-btn" onclick="filterByCategory('Shark')">Sharks</button>
-            <button class="filter-btn" onclick="filterByCategory('Reef Fish')">Reef Fish</button>
-            <button class="filter-btn" onclick="filterByCategory('Ray')">Rays</button>
+            <h1>AquaDex</h1>
+            <input type="text" id="searchBar" placeholder="Search 500+ species..." onkeyup="searchFish()">
+            <div class="filter-container">
+                <button class="filter-btn active" onclick="filterByCategory('All')">All</button>
+                <button class="filter-btn" onclick="filterByCategory('Shark')">Sharks</button>
+                <button class="filter-btn" onclick="filterByCategory('Reef Fish')">Reef Fish</button>
+                <button class="filter-btn" onclick="filterByCategory('Ray')">Rays</button>
+            </div>
         </div>
-
-        <a href="log.html" class="nav-link">📂 View My Collection</a>
+        <div id="fishGrid" class="grid"></div>
     </div>
 
-    <div id="fishGrid" class="grid"></div>
+    <div id="log-page" style="display:none;">
+        <div class="header">
+            <h1>My Discoveries</h1>
+            <p id="statsCounter">Found: 0 / 500</p>
+            <select id="sortSelect" onchange="renderLog()">
+                <option value="dateLogged">Recently Found</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="rarity">Rarity (Rarest)</option>
+            </select>
+        </div>
+        <div id="logGrid" class="grid"></div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="showPage('dex')">
+            <span>🔍</span>
+            <label>Dex</label>
+        </div>
+        <div class="nav-item" onclick="showPage('log')">
+            <span>📸</span>
+            <label>Log</label>
+        </div>
+    </div>
 
     <script src="data.js"></script>
     <script src="engine.js"></script>
     <script src="logger.js"></script>
-    
+    <script src="ui.js"></script>
     <script>
-        // Start the app once files are loaded
-        window.onload = () => {
-            if (typeof render === "function") render();
-        };
-    </script>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js');
-            });
-        }
+        window.onload = () => { render(); };
     </script>
 </body>
 </html>
