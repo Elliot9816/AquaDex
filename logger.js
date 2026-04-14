@@ -6,11 +6,17 @@ function logFish(name) {
         logged.push({ ...fishData, dateLogged: new Date().toISOString() });
         localStorage.setItem('myAquaLog', JSON.stringify(logged));
         
-        // Haptic Feedback (Will be enhanced in ui.js)
-        if (navigator.vibrate) navigator.vibrate(50);
+        // --- FEATURE 2: HAPTIC POP ---
+        if (fishData.rarity === 'rare') {
+            Haptics.success(); // Strong double-thump for Rare
+        } else {
+            Haptics.light(); // Light tap for common
+        }
         
-        alert(`Logged: ${name}`);
+        alert(`Logged: ${name}!`);
+        updateStats(); // Update the counter immediately
     } else {
-        alert("Already logged!");
+        Haptics.warning(); // "Error" vibration
+        alert("Already in your Dex!");
     }
 }

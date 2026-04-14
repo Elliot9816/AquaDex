@@ -25,3 +25,23 @@ function showPage(pageId) {
     // iPhone Haptic Feedback
     if (navigator.vibrate) navigator.vibrate(10);
 }
+
+// Feature 3: Stats Dashboard Logic
+function updateStats() {
+    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+    const counter = document.getElementById('statsCounter');
+    
+    if (counter) {
+        // Calculate percentage
+        const total = speciesList.length;
+        const count = logged.length;
+        const percent = Math.round((count / total) * 100);
+        
+        counter.innerHTML = `
+            <div class="stats-bar-bg">
+                <div class="stats-bar-fill" style="width: ${percent}%"></div>
+            </div>
+            <span>Found: <b>${count}</b> / ${total} (${percent}%)</span>
+        `;
+    }
+}
