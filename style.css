@@ -125,3 +125,37 @@ h1 {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
+
+/* --- FILTER CHIPS --- */
+.filter-container {
+    display: flex;
+    overflow-x: auto; /* Allows side-scrolling if you add many buttons */
+    gap: 10px;
+    padding: 10px 0 20px 0;
+    justify-content: center;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Hide scrollbar but keep functionality */
+.filter-container::-webkit-scrollbar {
+    display: none;
+}
+
+.filter-btn {
+    background: #1a1d24;
+    color: #4da3ff;
+    border: 1px solid #1a3a5f;
+    padding: 8px 16px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+

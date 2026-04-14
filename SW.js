@@ -1,5 +1,15 @@
 const CACHE_NAME = 'aquadex-v1';
-const ASSETS = ['/', '/index.html', '/log.html', '/style.css', '/script.js', '/log.js', '/manifest.json'];
+
+const ASSETS = [
+    '/',
+    '/index.html',
+    '/log.html',
+    '/style.css',
+    '/data.js',      // NEW
+    '/engine.js',    // NEW
+    '/logger.js',    // NEW
+    '/manifest.json'
+];
 
 self.addEventListener('install', (e) => {
     e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)));

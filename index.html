@@ -12,15 +12,33 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="header">
+        <div class="header">
         <h1>AquaDex</h1>
         <input type="text" id="searchBar" placeholder="Search 500+ species..." onkeyup="searchFish()">
+        
+        <div class="filter-container">
+            <button class="filter-btn active" onclick="filterByCategory('All')">All</button>
+            <button class="filter-btn" onclick="filterByCategory('Shark')">Sharks</button>
+            <button class="filter-btn" onclick="filterByCategory('Reef Fish')">Reef Fish</button>
+            <button class="filter-btn" onclick="filterByCategory('Ray')">Rays</button>
+        </div>
+
         <a href="log.html" class="nav-link">📂 View My Collection</a>
     </div>
 
     <div id="fishGrid" class="grid"></div>
 
-    <script src="script.js"></script>
+    <script src="data.js"></script>
+    <script src="engine.js"></script>
+    <script src="logger.js"></script>
+    
+    <script>
+        // Start the app once files are loaded
+        window.onload = () => {
+            if (typeof render === "function") render();
+        };
+    </script>
+
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
