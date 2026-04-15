@@ -244,3 +244,15 @@ h1 {
 .card {
     contain: paint; /* Helps iPhone performance */
 }
+
+/* Styling the Sort Dropdown */
+#sortSelect {
+    background: #1a1d24;
+    color: white;
+    border: 1px solid #333;
+    padding: 8px;
+    border-radius: 8px;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 14px;
+}

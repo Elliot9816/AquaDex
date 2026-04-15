@@ -64,3 +64,21 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }, true);
 });
+
+// Feature 5: Sorting Logic
+function sortLoggedFish(criteria) {
+    let logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+    
+    if (criteria === 'name') {
+        logged.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (criteria === 'rarity') {
+        const rarityOrder = { rare: 1, uncommon: 2, common: 3 };
+        logged.sort((a, b) => (rarityOrder[a.rarity] || 4) - (rarityOrder[b.rarity] || 4));
+    } else if (criteria === 'dateLogged') {
+        logged.sort((a, b) => new Date(b.dateLogged) - new Date(a.dateLogged));
+    }
+
+    // After sorting, we save it back or just re-render
+    // We'll just re-render for now to keep it fast
+    renderLog(logged); 
+}
