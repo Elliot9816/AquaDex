@@ -82,3 +82,21 @@ function sortLoggedFish(criteria) {
     // We'll just re-render for now to keep it fast
     renderLog(logged); 
 }
+
+// Feature 6: Long Press to Quick-Log
+let pressTimer;
+
+function startPress(name) {
+    // A tiny "tick" to let the user know the touch was registered
+    if (navigator.vibrate) navigator.vibrate(5); 
+    
+    pressTimer = window.setTimeout(() => {
+        if (typeof logFish === "function") {
+            logFish(name);
+        }
+    }, 700); // 0.7 seconds feels like a natural "long press"
+}
+
+function cancelPress() {
+    clearTimeout(pressTimer);
+}

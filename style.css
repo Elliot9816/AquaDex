@@ -256,3 +256,18 @@ h1 {
     margin-top: 10px;
     font-size: 14px;
 }
+
+/* Padding for the very last row of fish so the Nav doesn't hide them */
+#fishGrid, #logGrid {
+    padding-bottom: 120px !important;
+}
+
+/* Make the search bar and headers "Sticky" so they stay at the top */
+.header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #0f1116;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: 15px;
+}
