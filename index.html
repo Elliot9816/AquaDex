@@ -26,18 +26,24 @@
         <div id="fishGrid" class="grid"></div>
     </div>
 
-    <div id="log-page" style="display:none;">
-        <div class="header">
-            <h1>My Discoveries</h1>
-            <p id="statsCounter">Found: 0 / 500</p>
+   <div id="log-page" style="display:none;">
+    <div class="header">
+        <h1>My Discoveries</h1>
+        
+        <div id="statsCounter"></div> 
+        
+        <div class="log-controls">
             <select id="sortSelect" onchange="sortLoggedFish(this.value)">
                 <option value="dateLogged">Recently Found</option>
                 <option value="name">Name (A-Z)</option>
                 <option value="rarity">Rarity (Rarest)</option>
             </select>
+            <button class="reset-btn" onclick="clearAllLogs()">Reset All</button>
         </div>
-        <div id="logGrid" class="grid"></div>
-    </div>
+        </div>
+    <div id="logGrid" class="grid"></div>
+</div>
+
 
     <div class="bottom-nav">
         <div class="nav-item active" onclick="showPage('dex')">

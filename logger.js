@@ -32,7 +32,6 @@ function logFish(name) {
 // 2. THE VISUALS: Draws the logged fish on the "Log" page
 function renderLog(data = null) {
     const grid = document.getElementById('logGrid');
-    // Use the sorted data if provided, otherwise grab everything from storage
     const logged = data || JSON.parse(localStorage.getItem('myAquaLog')) || [];
     
     if (!grid) return;
@@ -44,6 +43,8 @@ function renderLog(data = null) {
 
     grid.innerHTML = logged.map(fish => `
         <div class="card">
+            <button class="remove-badge" onclick="removeFish('${fish.name.replace(/'/g, "\\'")}')">×</button>
+            
             <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
             <img class="fish-img" src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" loading="lazy">
             <div class="card-info">
@@ -52,4 +53,28 @@ function renderLog(data = null) {
             </div>
         </div>
     `).join('');
+}
+
+
+// Remove a single entry
+function removeFish(name) {
+    if (confirm(`Remove ${name} from your log?`)) {
+        let logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+        logged = logged.filter(f => f.name !== name);
+        localStorage.setItem('myAquaLog', JSON.stringify(logged));
+        
+        Haptics.medium(); // A little vibration for the deletion
+        renderLog();      // Refresh the list
+        updateStats();    // Update the progress bar
+    }
+}
+
+// Wipe the entire database
+function clearAllLogs() {
+    if (confirm("Are you sure? This will delete ALL your discoveries!")) {
+        localStorage.removeItem('myAquaLog');
+        Haptics.warning(); // Strong vibration for a big action
+        renderLog();
+        updateStats();
+    }
 }

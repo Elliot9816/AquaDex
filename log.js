@@ -31,4 +31,5 @@ function renderLog() {
         </div>
     `).join('');
 }
+
 renderLog();

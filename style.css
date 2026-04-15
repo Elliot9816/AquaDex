@@ -271,3 +271,36 @@ h1 {
     padding-top: env(safe-area-inset-top);
     padding-bottom: 15px;
 }
+
+/* Individual Remove Button */
+.remove-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ff3b30;
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 12px;
+    font-weight: bold;
+    z-index: 5;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+
+/* Header Controls Layout */
+.log-controls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.reset-btn {
+    background: #2c2c2e;
+    color: #ff453a; /* iOS Red */
+    border: 1px solid #3a3a3c;
+    border-radius: 8px;
+    padding: 0 15px;
+    font-size: 13px;
+    white-space: nowrap;
+}
