@@ -20,3 +20,26 @@ function logFish(name) {
         alert("Already in your Dex!");
     }
 }
+
+function renderLog() {
+    const grid = document.getElementById('logGrid');
+    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+    
+    if (!grid) return;
+
+    if (logged.length === 0) {
+        grid.innerHTML = "<p style='color:gray; padding:20px;'>No sightings yet. Go explore!</p>";
+        return;
+    }
+
+    grid.innerHTML = logged.map(fish => `
+        <div class="card">
+            <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
+            <img class="fish-img" src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" loading="lazy">
+            <div class="card-info">
+                <div class="fish-name">${fish.name}</div>
+                <div class="category">${new Date(fish.dateLogged).toLocaleDateString()}</div>
+            </div>
+        </div>
+    `).join('');
+}
