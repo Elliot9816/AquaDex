@@ -356,3 +356,19 @@ h1 {
     font-size: 10px;
     font-weight: bold;
 }
+
+.danger-row {
+    font-size: 12px;
+    margin: 4px 0;
+    display: flex;
+    gap: 2px;
+}
+
+.danger-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: #8e8e93;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
