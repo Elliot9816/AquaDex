@@ -100,3 +100,38 @@ function startPress(name) {
 function cancelPress() {
     clearTimeout(pressTimer);
 }
+
+function showPage(pageId) {
+    const pages = ['dex-page', 'log-page', 'detail-page'];
+    
+    // Hide all pages, then show the one we want
+    pages.forEach(p => document.getElementById(p).style.display = 'none');
+    document.getElementById(`${pageId}-page`).style.display = 'block';
+
+    if (pageId === 'log') renderLog();
+    if (pageId === 'dex') render();
+
+    // Hide bottom nav if we are on the detail page to give more room
+    document.querySelector('.bottom-nav').style.display = (pageId === 'detail') ? 'none' : 'flex';
+}
+
+function openDetail(name) {
+    const fish = speciesList.find(f => f.name === name);
+    if (!fish) return;
+
+    const detailContent = document.getElementById('detailContent');
+    detailContent.innerHTML = `
+        <div class="detail-card">
+            <img src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" class="detail-img">
+            <div class="detail-info">
+                <span class="rarity-tag" style="background:${getColor(fish.rarity)}">${fish.rarity}</span>
+                <h1>${fish.name}</h1>
+                <p class="detail-cat">${fish.cat}</p>
+                <hr>
+                <p class="detail-desc">${fish.desc || "No description available for this species yet."}</p>
+                <button class="big-log-btn" onclick="logFish('${fish.name.replace(/'/g, "\\'")}')">📸 Log Discovery</button>
+            </div>
+        </div>
+    `;
+    showPage('detail');
+}

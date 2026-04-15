@@ -9,15 +9,18 @@ function render(data = speciesList) {
     const grid = document.getElementById('fishGrid');
     if (!grid) return;
 
-   grid.innerHTML = data.map(fish => `
+  grid.innerHTML = data.map(fish => `
     <div class="card" 
          ontouchstart="startPress('${fish.name.replace(/'/g, "\\'")}')" 
          ontouchend="cancelPress()">
         <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
+        
         <img class="fish-img" 
              src="https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg" 
-             loading="lazy"
-             onerror="this.src='https://via.placeholder.com/150?text=Fish'">
+             onclick="openDetail('${fish.name.replace(/'/g, "\\'")}')"
+             onerror="this.src='https://via.placeholder.com/150?text=Fish'"
+             loading="lazy">
+
         <div class="card-info">
             <div class="fish-name">${fish.name}</div>
             <div class="category">${fish.cat}</div>
