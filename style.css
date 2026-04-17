@@ -372,3 +372,37 @@ h1 {
     align-items: center;
     gap: 8px;
 }
+
+/* Update the detail-page to support animation */
+#detail-page {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: #0f1116;
+    z-index: 1000;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease-out; /* Add this line */
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+/* Make the bottom nav always stay on top */
+.bottom-nav {
+    z-index: 2000; 
+    backdrop-filter: blur(20px);
+    background: rgba(28, 28, 30, 0.8);
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+button, .nav-item, .card, img {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent; /* Removes the grey box when tapping */
+}
+
+/* Make text unselectable so it feels like a UI, not a website */
+body {
+    user-select: none;
+    -webkit-user-select: none;
+}

@@ -10,21 +10,41 @@ const Haptics = {
 function showPage(pageId) {
     const pages = ['dex-page', 'log-page', 'detail-page'];
     
+    // Hide all pages
     pages.forEach(p => {
         const el = document.getElementById(p);
         if (el) el.style.display = 'none';
     });
 
+    // Show target page
     const target = document.getElementById(`${pageId}-page`);
     if (target) target.style.display = 'block';
 
-    // Update Bottom Nav Active State
+    // NATIVE NAV LOGIC: Change icons based on page
     const navItems = document.querySelectorAll('.nav-item');
-    navItems.forEach(item => {
-        item.classList.remove('active');
-        if (item.getAttribute('onclick').includes(`'${pageId}'`)) {
-            item.classList.add('active');
-        }
+    
+    if (pageId === 'detail') {
+        // Transform "Dex" into "Close" when viewing a fish
+        navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
+        navItems[0].onclick = () => showPage('dex');
+        navItems[1].style.opacity = '0.3'; 
+        navItems[1].style.pointerEvents = 'none'; // Disable Log button while in detail
+    } else {
+        // Restore standard Navigation
+        navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
+        navItems[0].onclick = () => showPage('dex');
+        navItems[1].style.opacity = '1';
+        navItems[1].style.pointerEvents = 'auto';
+        
+        // Highlight active tab
+        navItems.forEach(item => item.classList.remove('active'));
+        if (pageId === 'dex') navItems[0].classList.add('active');
+        if (pageId === 'log') navItems[1].classList.add('active');
+    }
+
+    if (pageId === 'log') renderLog();
+    Haptics.light();
+}
     });
 
     // Refresh data if going to Log or Dex
