@@ -1,25 +1,3 @@
-// Helper to get rarity colors
-function getColor(rarity) {
-    const colors = { rare: '#ff3b30', uncommon: '#ffcc00', common: '#4cd964' };
-    return colors[rarity] || '#8e8e93';
-}
-
-function getDangerStars(level) {
-    let skulls = '';
-    // We loop 5 times to always show a total of 5 icons
-    for (let i = 1; i <= 5; i++) {
-        if (i <= level) {
-            // Level 1-2: White, Level 3: Yellow, Level 4-5: Red
-            const color = level <= 2 ? 'white' : (level === 3 ? '#ffcc00' : '#ff3b30');
-            skulls += `<span style="color: ${color}; filter: drop-shadow(0 0 2px rgba(0,0,0,0.5));">💀</span>`;
-        } else {
-            // Empty skulls for the remaining levels
-            skulls += `<span style="opacity: 0.2; filter: grayscale(1);">💀</span>`;
-        }
-    }
-    return skulls;
-}
-
 // The main engine that draws the fish cards
 function render(data = speciesList) {
     const grid = document.getElementById('fishGrid');

@@ -1,3 +1,28 @@
+// UNIVERSAL HELPERS (Place at top of ui.js)
+function getColor(rarity) {
+    const colors = {
+        common: '#8e8e93',
+        uncommon: '#34c759',
+        rare: '#007aff',
+        epic: '#af52de',
+        legendary: '#ffcc00'
+    };
+    return colors[rarity] || '#8e8e93';
+}
+
+function getDangerStars(level) {
+    let skulls = '';
+    for (let i = 1; i <= 5; i++) {
+        if (i <= level) {
+            const color = level <= 2 ? 'white' : (level === 3 ? '#ffcc00' : '#ff3b30');
+            skulls += `<span style="color: ${color};">💀</span>`;
+        } else {
+            skulls += `<span style="opacity: 0.2;">💀</span>`;
+        }
+    }
+    return skulls;
+}
+
 // 1. HAPTIC ENGINE
 const Haptics = {
     light: () => { if (navigator.vibrate) navigator.vibrate(10); },
@@ -17,43 +42,42 @@ function showPage(pageId) {
     });
 
     // Show target page
+    function showPage(pageId) {
+    const pages = ['dex-page', 'log-page', 'detail-page'];
+    
+    // 1. Hide/Show Pages
+    pages.forEach(p => {
+        const el = document.getElementById(p);
+        if (el) el.style.display = 'none';
+    });
     const target = document.getElementById(`${pageId}-page`);
     if (target) target.style.display = 'block';
 
-    // NATIVE NAV LOGIC: Change icons based on page
+    // 2. Update Bottom Nav
     const navItems = document.querySelectorAll('.nav-item');
     
-    if (pageId === 'detail') {
-        // Transform "Dex" into "Close" when viewing a fish
-        navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
-        navItems[0].onclick = () => showPage('dex');
-        navItems[1].style.opacity = '0.3'; 
-        navItems[1].style.pointerEvents = 'none'; // Disable Log button while in detail
-    } else {
-        // Restore standard Navigation
-        navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
-        navItems[0].onclick = () => showPage('dex');
-        navItems[1].style.opacity = '1';
-        navItems[1].style.pointerEvents = 'auto';
-        
-        // Highlight active tab
-        navItems.forEach(item => item.classList.remove('active'));
-        if (pageId === 'dex') navItems[0].classList.add('active');
-        if (pageId === 'log') navItems[1].classList.add('active');
+    // Check if we actually have nav items before trying to change them
+    if (navItems.length >= 2) {
+        if (pageId === 'detail') {
+            navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
+            navItems[0].onclick = () => showPage('dex');
+            navItems[1].style.opacity = '0.3';
+            navItems[1].style.pointerEvents = 'none';
+        } else {
+            navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
+            navItems[0].onclick = () => showPage('dex');
+            navItems[1].style.opacity = '1';
+            navItems[1].style.pointerEvents = 'auto';
+
+            navItems.forEach(item => item.classList.remove('active'));
+            if (pageId === 'dex') navItems[0].classList.add('active');
+            if (pageId === 'log') navItems[1].classList.add('active');
+        }
     }
 
-    if (pageId === 'log') renderLog();
+    if (pageId === 'log' && typeof renderLog === 'function') renderLog();
     Haptics.light();
 }
-    });
-
-    // Refresh data if going to Log or Dex
-    if (pageId === 'log') {
-        if (typeof renderLog === "function") renderLog();
-    }
-    if (pageId === 'dex') {
-        if (typeof render === "function") render();
-    }
 
     // Hide Nav on Detail Page
     const nav = document.querySelector('.bottom-nav');
