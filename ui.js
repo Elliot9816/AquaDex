@@ -1,4 +1,20 @@
-// UNIVERSAL HELPERS (Place at top of ui.js)
+// ==========================================
+// 1. UNIVERSAL HELPERS
+// ==========================================
+function showToast(message, icon = '📸') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `<span>${icon}</span> ${message}`;
+    
+    container.appendChild(toast);
+    
+    // Auto-remove the element from the DOM after animation finishes
+    setTimeout(() => {
+        toast.remove();
+    }, 2500);
+}
+
 function getColor(rarity) {
     const colors = {
         common: '#8e8e93',
@@ -23,7 +39,9 @@ function getDangerStars(level) {
     return skulls;
 }
 
-// 1. HAPTIC ENGINE
+// ==========================================
+// 2. HAPTIC ENGINE
+// ==========================================
 const Haptics = {
     light: () => { if (navigator.vibrate) navigator.vibrate(10); },
     medium: () => { if (navigator.vibrate) navigator.vibrate(30); },
@@ -31,65 +49,79 @@ const Haptics = {
     warning: () => { if (navigator.vibrate) navigator.vibrate([100, 30, 100]); }
 };
 
-// 2. NAVIGATION LOGIC
+// ==========================================
+// 3. NAVIGATION LOGIC
+// ==========================================
 function showPage(pageId) {
-    const pages = ['dex-page', 'log-page', 'detail-page'];
-    
-    // Hide all pages
-    pages.forEach(p => {
-        const el = document.getElementById(p);
-        if (el) el.style.display = 'none';
-    });
+    try {
+        // 1. Hide/Show Pages
+        const pages = ['dex-page', 'log-page', 'detail-page', 'achievements-page'];
+        pages.forEach(p => {
+            const el = document.getElementById(p);
+            if (el) el.style.display = 'none';
+        });
 
-    // Show target page
-    function showPage(pageId) {
-    const pages = ['dex-page', 'log-page', 'detail-page'];
-    
-    // 1. Hide/Show Pages
-    pages.forEach(p => {
-        const el = document.getElementById(p);
-        if (el) el.style.display = 'none';
-    });
-    const target = document.getElementById(`${pageId}-page`);
-    if (target) target.style.display = 'block';
+        const target = document.getElementById(`${pageId}-page`);
+        if (target) target.style.display = 'block';
 
-    // 2. Update Bottom Nav
-    const navItems = document.querySelectorAll('.nav-item');
-    
-    // Check if we actually have nav items before trying to change them
-    if (navItems.length >= 2) {
-        if (pageId === 'detail') {
-            navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
-            navItems[0].onclick = () => showPage('dex');
-            navItems[1].style.opacity = '0.3';
-            navItems[1].style.pointerEvents = 'none';
-        } else {
-            navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
-            navItems[0].onclick = () => showPage('dex');
-            navItems[1].style.opacity = '1';
-            navItems[1].style.pointerEvents = 'auto';
+        // 2. Manage Navigation Bar Icons & Highlight
+        const navItems = document.querySelectorAll('.nav-item');
+        const navBar = document.querySelector('.bottom-nav');
+        
+        if (navItems.length >= 3) {
+            if (pageId === 'detail') {
+                // Change Search to Close on Detail view
+                navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
+                navItems[0].onclick = () => showPage('dex');
+                navItems[1].style.opacity = '0.3';
+                navItems[2].style.opacity = '0.3';
+                if (navBar) navBar.style.display = 'none';
+            } else {
+                // Standard Icons
+                navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
+                navItems[0].onclick = () => showPage('dex');
+                navItems[1].style.opacity = '1';
+                navItems[2].style.opacity = '1';
+                if (navBar) navBar.style.display = 'flex';
 
-            navItems.forEach(item => item.classList.remove('active'));
-            if (pageId === 'dex') navItems[0].classList.add('active');
-            if (pageId === 'log') navItems[1].classList.add('active');
+                // Move "Active" Highlight
+                navItems.forEach(item => item.classList.remove('active'));
+                if (pageId === 'dex') navItems[0].classList.add('active');
+                if (pageId === 'log') navItems[1].classList.add('active');
+                if (pageId === 'achievements') navItems[2].classList.add('active');
+            }
         }
+
+        // 3. Run Renderers
+        if (pageId === 'dex' && typeof render === 'function') render();
+        if (pageId === 'log' && typeof renderLog === 'function') renderLog();
+        if (pageId === 'achievements' && typeof renderAchievements === 'function') renderAchievements();
+        
+        if (typeof updateStats === 'function') updateStats();
+        Haptics.light();
+
+    } catch (err) {
+        console.error("Navigation Error:", err);
     }
-
-    if (pageId === 'log' && typeof renderLog === 'function') renderLog();
-    Haptics.light();
 }
 
-    // Hide Nav on Detail Page
-    const nav = document.querySelector('.bottom-nav');
-    if (nav) nav.style.display = (pageId === 'detail') ? 'none' : 'flex';
-    
-    Haptics.light();
-}
-
-// 3. DETAIL VIEW LOGIC
+// ==========================================
+// 4. DETAIL VIEW LOGIC
+// ==========================================
 function openDetail(name) {
     const fish = speciesList.find(f => f.name === name);
     if (!fish) return;
+
+    // Pull the count from storage
+    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+    const record = logged.find(f => f.name === name);
+    const count = record ? record.count : 0;
+
+    // Define Ranks
+    let rank = "Unobserved";
+    if (count >= 1) rank = "Sighting";
+    if (count >= 5) rank = "Observer";
+    if (count >= 10) rank = "Expert";
 
     const detailContent = document.getElementById('detailContent');
     detailContent.innerHTML = `
@@ -98,24 +130,32 @@ function openDetail(name) {
             <div class="detail-info">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
                     <span class="rarity-tag" style="background:${getColor(fish.rarity)}">${fish.rarity}</span>
-                    <span class="danger-label">Danger: ${getDangerStars(fish.danger || 1)}</span>
+                    <span class="rank-tag">${rank}</span>
                 </div>
                 <h1>${fish.name}</h1>
-                <p class="detail-cat">${fish.cat}</p>
+                <p class="detail-cat">${fish.cat} • <b>Spotted ${count}x</b></p>
+                
+                <div class="research-container">
+                    <div class="research-bar" style="width: ${Math.min((count / 10) * 100, 100)}%"></div>
+                </div>
+
                 <hr style="border: 0; border-top: 1px solid #333; margin: 20px 0;">
-                <p class="detail-desc">${fish.desc || "Description pending for this species."}</p>
-                <button class="big-log-btn" onclick="logFish('${fish.name.replace(/'/g, "\\'")}')">📸 Log Discovery</button>
+                <p class="detail-desc">${fish.desc || "Description pending."}</p>
+                <button class="big-log-btn" onclick="logFish('${fish.name.replace(/'/g, "\\'")}')">📸 Log Observation #${count + 1}</button>
             </div>
         </div>
     `;
     showPage('detail');
 }
 
-// 4. STATS DASHBOARD
+
+// ==========================================
+// 5. STATS DASHBOARD
+// ==========================================
 function updateStats() {
     const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
     const counter = document.getElementById('statsCounter');
-    if (counter) {
+    if (counter && typeof speciesList !== 'undefined') {
         const total = speciesList.length;
         const count = logged.length;
         const percent = Math.round((count / total) * 100);
@@ -126,7 +166,9 @@ function updateStats() {
     }
 }
 
-// 5. QUICK-LOG (LONG PRESS)
+// ==========================================
+// 6. QUICK-LOG (LONG PRESS)
+// ==========================================
 let pressTimer;
 function startPress(name) {
     Haptics.light();

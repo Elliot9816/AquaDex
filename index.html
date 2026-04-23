@@ -53,19 +53,27 @@
         <div id="detailContent"></div>
     </div>
 
+<div id="achievements-page" style="display:none;">
+    <div class="header">
+        <h1>Trophy Room</h1>
+    </div>
+    <div id="achievementsGrid" class="achievement-grid"></div>
+</div>
+
     <div class="bottom-nav">
-    <div class="nav-item active" onclick="showPage('dex')">
-        <span>🔍</span><label>Dex</label>
-    </div>
-    <div class="nav-item" onclick="showPage('log')">
-        <span>📸</span><label>Log</label>
-    </div>
+    <div class="nav-item active" onclick="showPage('dex')"><span>🔍</span><label>Dex</label></div>
+    <div class="nav-item" onclick="showPage('log')"><span>📸</span><label>Log</label></div>
+    <div class="nav-item" onclick="showPage('achievements')"><span>🏆</span><label>Trophies</label></div>
+	 <div id="toast-container"></div>
+
 </div>
 
     <script src="data.js"></script>
     <script src="ui.js"></script>
     <script src="logger.js"></script>
+    <script src="achievements.js"></script>
     <script src="engine.js"></script>
+
 
     <script>
         // Start the app once everything is loaded

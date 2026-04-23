@@ -1,32 +1,43 @@
-// 1. THE ACTION: Saves a fish
+// 1. LOG LOGIC: Increments sightings or adds new discovery
 function logFish(name) {
     let logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
-    
-    if (!logged.find(f => f.name === name)) {
+    const fishIndex = logged.findIndex(f => f.name === name);
+
+    if (fishIndex > -1) {
+        // INCREMENT: We already have it, so just add to the count
+        logged[fishIndex].count = (logged[fishIndex].count || 1) + 1;
+        logged[fishIndex].dateLogged = new Date().toISOString();
+        
+        if (typeof Haptics !== 'undefined') Haptics.success();
+        
+        // --- NEW TOAST REPLACING ALERT ---
+        showToast(`Observation #${logged[fishIndex].count} Logged!`, '🔄');
+    } else {
+        // NEW DISCOVERY: First time seeing it
         const fishData = speciesList.find(f => f.name === name);
         if(!fishData) return;
 
         logged.push({ 
             ...fishData, 
+            count: 1,
             dateLogged: new Date().toISOString() 
         });
         
-        localStorage.setItem('myAquaLog', JSON.stringify(logged));
+        if (typeof Haptics !== 'undefined') Haptics.light();
         
-        // Safe Haptics
-        if (typeof Haptics !== 'undefined') {
-            fishData.rarity === 'rare' ? Haptics.success() : Haptics.light();
-        }
-        
-        alert(`Logged: ${name}!`);
-        if (typeof updateStats === 'function') updateStats();
-    } else {
-        if (typeof Haptics !== 'undefined') Haptics.warning();
-        alert("Already in your Dex!");
+        // --- NEW TOAST REPLACING ALERT ---
+        showToast(`New Discovery: ${name}!`, '✨');
     }
+
+    localStorage.setItem('myAquaLog', JSON.stringify(logged));
+    if (typeof updateStats === 'function') updateStats();
+    
+    // Only re-render if we are currently looking at the log page
+    const logPage = document.getElementById('log-page');
+    if (logPage && logPage.style.display !== 'none') renderLog();
 }
 
-// 2. THE VISUALS: Draws the log
+// 2. THE VISUALS: Draws the log with sighting counts
 function renderLog() {
     const grid = document.getElementById('logGrid');
     if (!grid) return;
@@ -54,7 +65,7 @@ function renderLog() {
 
             <div class="card-info">
                 <div class="fish-name">${fish.name}</div>
-                <div class="category">${fish.cat}</div>
+                <div class="category">${fish.cat} • <b>${fish.count || 1}x</b></div>
                 <div class="danger-row">${typeof getDangerStars === 'function' ? getDangerStars(fish.danger || 1) : '💀'}</div>
             </div>
         </div>
@@ -71,14 +82,16 @@ function removeFish(name) {
         if (typeof Haptics !== 'undefined') Haptics.medium();
         renderLog();
         if (typeof updateStats === 'function') updateStats();
+        showToast(`${name} removed from logs`, '🗑️');
     }
 }
 
 function clearAllLogs() {
-    if (confirm("Delete ALL discoveries?")) {
+    if (confirm("Delete ALL discoveries? This cannot be undone.")) {
         localStorage.removeItem('myAquaLog');
         if (typeof Haptics !== 'undefined') Haptics.warning();
         renderLog();
         if (typeof updateStats === 'function') updateStats();
+        showToast(`All logs cleared`, '🧹');
     }
 }
