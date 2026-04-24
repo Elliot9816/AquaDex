@@ -20,11 +20,29 @@
         <div class="header">
             <h1>AquaDex</h1>
             <input type="text" id="searchBar" placeholder="Search 500+ species..." onkeyup="searchFish()">
+            
+            <div class="sort-container">
+    <select id="sortSelect" onchange="handleSort()">
+        <option value="name_asc">Name (A-Z)</option>
+        <option value="name_desc">Name (Z-A)</option>
+        <option value="rarity_desc">Rarity (High-Low)</option>
+        <option value="rarity_asc">Rarity (Low-High)</option>
+        <option value="danger_desc">Danger (High-Low)</option>
+        <option value="danger_asc">Danger (Low-High)</option>
+    </select>
+</div>
+
+
             <div class="filter-container">
                 <button class="filter-btn active" onclick="filterByCategory('All')">All</button>
                 <button class="filter-btn" onclick="filterByCategory('Shark')">Sharks</button>
-                <button class="filter-btn" onclick="filterByCategory('Reef Fish')">Reef Fish</button>
                 <button class="filter-btn" onclick="filterByCategory('Ray')">Rays</button>
+                <button class="filter-btn" onclick="filterByCategory('Mammal')">Mammals</button>
+                <button class="filter-btn" onclick="filterByCategory('Turtle')">Turtles</button>
+                <button class="filter-btn" onclick="filterByCategory('Cephalopod')">Cephalopods</button>
+                <button class="filter-btn" onclick="filterByCategory('Nudibranch')">Nudis</button>
+                <button class="filter-btn" onclick="filterByCategory('Crustacean')">Crabs</button>
+                <button class="filter-btn" onclick="filterByCategory('Macro')">Macro</button>
             </div>
         </div>
         <div id="fishGrid" class="grid"></div>
@@ -35,10 +53,10 @@
             <h1>My Discoveries</h1>
             <div id="statsCounter"></div> 
             <div class="log-controls">
-                <select id="sortSelect" onchange="sortLoggedFish(this.value)">
+                <select id="logSortSelect" onchange="sortLoggedFish(this.value)">
                     <option value="dateLogged">Recently Found</option>
                     <option value="name">Name (A-Z)</option>
-                    <option value="rarity">Rarity (Rarest)</option>
+                    <option value="rarity">Rarity</option>
                 </select>
                 <button class="reset-btn" onclick="clearAllLogs()">Reset All</button>
             </div>
@@ -47,46 +65,41 @@
     </div>
 
     <div id="detail-page" style="display:none;">
-        <div class="header" style="background: rgba(15, 17, 22, 0.9); backdrop-filter: blur(10px);">
+        <div class="header" style="background: rgba(15, 17, 22, 0.9); backdrop-filter: blur(10px); position: sticky; top:0; z-index:100;">
             <button class="back-btn" onclick="showPage('dex')">← Back</button>
         </div>
         <div id="detailContent"></div>
     </div>
 
-<div id="achievements-page" style="display:none;">
-    <div class="header">
-        <h1>Trophy Room</h1>
+    <div id="achievements-page" style="display:none;">
+        <div class="header">
+            <h1>Trophy Room</h1>
+        </div>
+        <div id="achievementsGrid" class="achievement-grid"></div>
     </div>
-    <div id="achievementsGrid" class="achievement-grid"></div>
-</div>
 
     <div class="bottom-nav">
-    <div class="nav-item active" onclick="showPage('dex')"><span>🔍</span><label>Dex</label></div>
-    <div class="nav-item" onclick="showPage('log')"><span>📸</span><label>Log</label></div>
-    <div class="nav-item" onclick="showPage('achievements')"><span>🏆</span><label>Trophies</label></div>
-	 <div id="toast-container"></div>
+        <div class="nav-item active" onclick="showPage('dex')"><span>🔍</span><label>Dex</label></div>
+        <div class="nav-item" onclick="showPage('log')"><span>📸</span><label>Log</label></div>
+        <div class="nav-item" onclick="showPage('achievements')"><span>🏆</span><label>Trophies</label></div>
+    </div>
 
-</div>
+    <div id="toast-container"></div>
 
     <script src="data.js"></script>
     <script src="ui.js"></script>
     <script src="logger.js"></script>
     <script src="achievements.js"></script>
     <script src="engine.js"></script>
-
-
+    
     <script>
-        // Start the app once everything is loaded
         window.onload = () => { 
             if (typeof render === "function") {
                 render(); 
-                updateStats();
+                if(typeof updateStats === "function") updateStats();
             }
-        };
-
-        window.onerror = function(msg, url, line) {
-            console.error("Error: " + msg + "\nLine: " + line);
         };
     </script>
 </body>
+
 </html>

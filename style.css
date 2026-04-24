@@ -1,23 +1,60 @@
+/* === 1. GLOBAL & MOBILE DEFAULTS === */
 html, body {
     width: 100%;
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    -webkit-text-size-adjust: 100%;
+    background-color: #02050c;
+    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #fff;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    background-color: #02050c;
-    margin: 0;
-    padding: env(safe-area-inset-top) 15px env(safe-area-inset-bottom) 15px;
-    color: #fff;
+    padding: env(safe-area-inset-top) 15px 120px 15px;
     -webkit-font-smoothing: antialiased;
 }
 
+/* This ensures the badge stays INSIDE this box */
+.detail-image-container {
+    position: relative; 
+    width: 100%;
+    height: 300px; /* Or 40vh */
+    overflow: hidden;
+    background: #1a1d24;
+}
+
+.detail-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Ensure this is exactly like this */
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 9999; /* Higher than the image */
+    background: rgba(0,0,0,0.8);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    border: 1px solid; /* Color comes from JS */
+}
+
+
+/* === 2. HEADER & STICKY CONTROLS === */
 .header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    background: #02050c;
+    padding: 20px 0 15px 0;
     text-align: center;
-    padding: 20px 0;
 }
 
 h1 {
@@ -27,276 +64,29 @@ h1 {
 }
 
 #searchBar {
-    width: 90%;
+    width: 100%;
     padding: 14px;
     font-size: 16px;
     border: none;
     border-radius: 12px;
     background: #1a1d24;
     color: white;
-    margin: 0 auto 15px;
-    display: block;
+    margin-bottom: 15px;
+    outline: none;
 }
 
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding-bottom: 50px;
-    animation: fadeIn 0.4s ease-out;
-}
-
-.card {
-    background: #11141b;
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-    transition: transform 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
-    -webkit-tap-highlight-color: transparent;
-}
-
-.card:active {
-    transform: scale(0.94);
-}
-
-.rarity-dot {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    border: 1.5px solid white;
-    z-index: 5;
-}
-
-.fish-img {
-    width: 100%;
-    height: 100px;
-    object-fit: cover;
-    background: #1a1d24;
-}
-
-.card-info {
-    padding: 10px;
-}
-
-.fish-name {
-    font-weight: bold;
-    font-size: 14px;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.category {
-    font-size: 9px;
-    color: #aaa;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-}
-
-.log-btn {
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 8px;
-    border-radius: 8px;
-    width: 100%;
-    font-weight: bold;
-    font-size: 12px;
-}
-
-.nav-link {
-    display: inline-block;
-    padding: 8px 18px;
-    background: #1a1d24;
-    color: #4da3ff;
-    text-decoration: none;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: bold;
-}
-
-.date-tag {
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    background: rgba(0,0,0,0.8);
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 10px;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* --- FILTER CHIPS --- */
-.filter-container {
-    display: flex;
-    overflow-x: auto; /* Allows side-scrolling if you add many buttons */
-    gap: 10px;
-    padding: 10px 0 20px 0;
-    justify-content: center;
-    -webkit-overflow-scrolling: touch;
-}
-
-/* Hide scrollbar but keep functionality */
-.filter-container::-webkit-scrollbar {
-    display: none;
-}
-
-.filter-btn {
+/* Sort Dropdowns */
+#sortSelect, #logSortSelect {
     background: #1a1d24;
     color: #4da3ff;
     border: 1px solid #1a3a5f;
-    padding: 8px 16px;
-    border-radius: 20px;
-    white-space: nowrap;
-    font-size: 13px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
     font-weight: 600;
-    transition: all 0.2s;
+    margin-bottom: 10px;
 }
 
-.filter-btn.active {
-    background: #007bff;
-    color: white;
-    border-color: #007bff;
-}
-
-/* --- BOTTOM NAVIGATION --- */
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 70px;
-    background: rgba(26, 29, 36, 0.95);
-    backdrop-filter: blur(10px); /* iPhone-style glass effect */
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    border-top: 1px solid #333;
-    padding-bottom: env(safe-area-inset-bottom); /* Fix for home bar */
-    z-index: 100;
-}
-
-.nav-item {
-    text-align: center;
-    color: #8e8e93;
-    font-size: 10px;
-    font-weight: bold;
-    display: flex;
-    flex-direction: column;
-}
-
-.nav-item span {
-    font-size: 24px;
-    margin-bottom: 2px;
-}
-
-.nav-item.active {
-    color: #4da3ff;
-}
-
-/* Adjust grid padding so the bottom nav doesn't cover fish */
-.grid {
-    padding-bottom: 100px; 
-}
-
-/* --- STATS DASHBOARD --- */
-.stats-bar-bg {
-    width: 100%;
-    height: 8px;
-    background: #1a1d24;
-    border-radius: 4px;
-    margin-bottom: 8px;
-    overflow: hidden;
-}
-
-.stats-bar-fill {
-    height: 100%;
-    background: linear-gradient(90deg, #4da3ff, #62ffaa);
-    transition: width 0.5s ease-out;
-}
-
-#statsCounter span {
-    font-size: 14px;
-    color: #8e8e93;
-}
-
-.log-btn {
-    position: relative;
-    z-index: 10; /* Brings the button to the front */
-    cursor: pointer;
-    pointer-events: auto; /* Ensures it accepts taps */
-}
-
-/* Ensure the bottom nav doesn't overlap the last row of fish */
-#fishGrid {
-    padding-bottom: 120px !important;
-}
-
-/* --- FEATURE 4: LAZY LOADING & SKELETONS --- */
-.fish-img {
-    background-color: #1a1d24; /* Dark placeholder color */
-    min-height: 150px;
-    display: block;
-    transition: opacity 0.3s ease-in;
-}
-
-/* Add a slight shimmer effect to the cards while loading */
-.card {
-    contain: paint; /* Helps iPhone performance */
-}
-
-/* Styling the Sort Dropdown */
-#sortSelect {
-    background: #1a1d24;
-    color: white;
-    border: 1px solid #333;
-    padding: 8px;
-    border-radius: 8px;
-    width: 100%;
-    margin-top: 10px;
-    font-size: 14px;
-}
-
-/* Padding for the very last row of fish so the Nav doesn't hide them */
-#fishGrid, #logGrid {
-    padding-bottom: 120px !important;
-}
-
-/* Make the search bar and headers "Sticky" so they stay at the top */
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    background: #0f1116;
-    padding-top: env(safe-area-inset-top);
-    padding-bottom: 15px;
-}
-
-/* Individual Remove Button */
-.remove-badge {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #ff3b30;
-    color: white;
-    border: none;
-    width: 24px;
-    height: 24px;
-    border-radius: 12px;
-    font-weight: bold;
-    z-index: 5;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-}
-
-/* Header Controls Layout */
 .log-controls {
     display: flex;
     gap: 10px;
@@ -305,206 +95,240 @@ h1 {
 
 .reset-btn {
     background: #2c2c2e;
-    color: #ff453a; /* iOS Red */
+    color: #ff453a;
     border: 1px solid #3a3a3c;
     border-radius: 8px;
-    padding: 0 15px;
+    padding: 10px 15px;
     font-size: 13px;
-    white-space: nowrap;
 }
 
-/* Detail Page Styling */
+/* === 3. FILTER CHIPS === */
+.filter-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 10px;
+    padding: 5px 0 10px 0;
+}
+
+.filter-container::-webkit-scrollbar { display: none; }
+
+.filter-btn {
+    background: #1a1d24;
+    color: #8e8e93;
+    border: none;
+    padding: 8px 18px;
+    border-radius: 20px;
+    white-space: nowrap;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.filter-btn.active {
+    background: #4da3ff;
+    color: white;
+}
+
+/* === 4. THE GRID & CARDS === */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.card {
+    background: #11141b;
+    border-radius: 15px;
+    overflow: hidden;
+    position: relative;
+}
+
+.rarity-dot {
+    position: absolute;
+    top: 8px; left: 8px;
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    border: 1.5px solid white;
+    z-index: 5;
+}
+
+.fish-img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    background: #1a1d24;
+}
+
+.card-info { padding: 10px; }
+
+.fish-name {
+    font-weight: bold; font-size: 14px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.category { font-size: 9px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; }
+
+.danger-row { display: flex; gap: 2px; margin-bottom: 8px; }
+
+.status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: rgba(0,0,0,0.85); /* Slightly darker for better contrast */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid; /* The color will be injected by JavaScript */
+    z-index: 10;
+    backdrop-filter: blur(4px); /* Adds a premium glassy look */
+}
+/* === 5. DETAIL PAGE (KING OF THE HILL) === */
 #detail-page {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
-    background: #0f1116;
-    z-index: 1000;
+    background: #02050c;
+    z-index: 5000;
     overflow-y: auto;
-    padding-bottom: 50px;
-}
-
-.detail-img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-.detail-info { padding: 20px; }
-
-.detail-desc {
-    line-height: 1.6;
-    color: #ced4da;
-    font-size: 16px;
-    margin: 20px 0;
-}
-
-.big-log-btn {
-    width: 100%;
-    padding: 15px;
-    background: #007aff;
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: bold;
+    animation: slideUp 0.3s ease-out;
 }
 
 .back-btn {
     background: none;
     border: none;
-    color: #007aff;
+    color: #4da3ff;
     font-size: 18px;
-    padding: 10px;
-}
-
-.rarity-tag {
-    padding: 4px 12px;
-    border-radius: 20px;
-    text-transform: uppercase;
-    font-size: 10px;
     font-weight: bold;
+    padding: 15px;
 }
 
-.danger-row {
+.detail-img { width: 100%; height: 300px; object-fit: cover; }
+
+.detail-info { padding: 20px; padding-bottom: 120px; }
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 0;
+    background: rgba(255,255,255,0.03);
+    padding: 15px;
+    border-radius: 12px;
+}
+
+.spec-item { display: flex; flex-direction: column; }
+.spec-item strong { font-size: 10px; color: #4da3ff; text-transform: uppercase; }
+.spec-item span { font-size: 15px; }
+
+.status-badge {
+    position: absolute;
+    top: 15px; right: 15px;
+    background: rgba(0,0,0,0.8);
+    color: #ffcc00;
+    padding: 4px 8px;
+    border-radius: 4px;
     font-size: 12px;
-    margin: 4px 0;
-    display: flex;
-    gap: 2px;
+    border: 1px solid #ffcc00;
 }
 
-.danger-label {
-    font-size: 14px;
-    font-weight: bold;
-    color: #8e8e93;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+.fun-fact-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(77, 163, 255, 0.1);
+    border-left: 4px solid #4da3ff;
+    border-radius: 4px;
 }
 
-/* Update the detail-page to support animation */
-#detail-page {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: #0f1116;
-    z-index: 1000;
-    overflow-y: auto;
-    animation: slideUp 0.3s ease-out; /* Add this line */
-}
-
-@keyframes slideUp {
-    from { transform: translateY(100%); }
-    to { transform: translateY(0); }
-}
-
-/* Make the bottom nav always stay on top */
-.bottom-nav {
-    z-index: 2000; 
-    backdrop-filter: blur(20px);
-    background: rgba(28, 28, 30, 0.8);
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-button, .nav-item, .card, img {
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent; /* Removes the grey box when tapping */
-}
-
-/* Make text unselectable so it feels like a UI, not a website */
-body {
-    user-select: none;
-    -webkit-user-select: none;
-}
-
-/* Achievement Page Layout */
+/* === 6. ACHIEVEMENT / TROPHY ROOM === */
 .achievement-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 15px;
-    padding-bottom: 120px; /* Space for Nav */
 }
 
 .ach-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px 10px;
-    border-radius: 20px;
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid rgba(255, 255, 255, 0.08);
-    min-height: 120px;
-    justify-content: center;
+    border-radius: 20px;
+    padding: 20px 10px;
+    text-align: center;
 }
 
 .ach-card.unlocked {
-    background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(15, 17, 22, 0.4));
     border-color: #2ecc71;
-    box-shadow: 0 4px 15px rgba(46, 204, 113, 0.15);
-}
-
-.ach-card.locked {
-    opacity: 0.4;
-    filter: grayscale(1);
+    background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(15, 17, 22, 0.4));
 }
 
 .ach-icon { font-size: 32px; margin-bottom: 8px; }
-.ach-info h3 { font-size: 13px; margin: 0; color: #fff; line-height: 1.2; }
-.ach-info p { font-size: 10px; margin-top: 5px; color: #888; display: none; }
-.ach-card.unlocked p { display: block; }
+.ach-info h3 { font-size: 13px; margin: 0; color: #fff; }
 
-.rank-tag {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: #2ecc71;
+/* === 7. BOTTOM NAVIGATION === */
+.bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; width: 100%;
+    height: 85px;
+    background: rgba(26, 29, 36, 0.9);
+    backdrop-filter: blur(20px);
+    display: flex;
+    justify-content: space-around;
+    padding-bottom: env(safe-area-inset-bottom);
+    z-index: 2000;
+    border-top: 1px solid rgba(255,255,255,0.1);
 }
 
-.research-container {
-    width: 100%;
-    height: 6px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    margin-top: 10px;
-    overflow: hidden;
-}
+.nav-item { text-align: center; color: #8e8e93; padding-top: 15px; }
+.nav-item span { font-size: 24px; display: block; }
+.nav-item label { font-size: 10px; font-weight: bold; }
+.nav-item.active { color: #4da3ff; }
 
-.research-bar {
-    height: 100%;
-    background: linear-gradient(to right, #2ecc71, #27ae60);
-    transition: width 0.5s ease;
-}
-
+/* === 8. TOAST NOTIFICATIONS === */
 #toast-container {
     position: fixed;
-    bottom: 100px; /* Sits above the nav bar */
-    left: 50%;
+    bottom: 100px; left: 50%;
     transform: translateX(-50%);
     z-index: 9999;
-    pointer-events: none;
 }
 
 .toast {
-    background: rgba(46, 204, 113, 0.95);
+    background: #2ecc71;
     color: white;
     padding: 12px 24px;
     border-radius: 30px;
-    margin-top: 10px;
     font-weight: bold;
     box-shadow: 0 4px 15px rgba(0,0,0,0.3);
     animation: slideUpFade 2.5s ease-out forwards;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    white-space: nowrap;
 }
 
+/* === 9. ANIMATIONS === */
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 @keyframes slideUpFade {
     0% { opacity: 0; transform: translateY(20px); }
     15% { opacity: 1; transform: translateY(0); }
-    80% { opacity: 1; transform: translateY(0); }
+    85% { opacity: 1; transform: translateY(0); }
     100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.big-log-btn {
+    width: 100%;
+    padding: 18px;
+    margin-top: 25px;
+    background: #007aff; /* iOS Blue */
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-size: 18px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
+    transition: transform 0.1s;
+}
+
+.big-log-btn:active {
+    transform: scale(0.96);
+    background: #0056b3;
 }

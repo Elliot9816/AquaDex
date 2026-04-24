@@ -30,11 +30,22 @@ function logFish(name) {
     }
 
     localStorage.setItem('myAquaLog', JSON.stringify(logged));
+    
+    // --- REFRESH LOGIC ---
+    
+    // 1. Update Global Stats Bar
     if (typeof updateStats === 'function') updateStats();
     
-    // Only re-render if we are currently looking at the log page
+    // 2. Update Log Page if visible
     const logPage = document.getElementById('log-page');
     if (logPage && logPage.style.display !== 'none') renderLog();
+
+    // 3. FIX: Update the Detail Page if you are currently looking at it
+    const detailPage = document.getElementById('detail-page');
+    if (detailPage && detailPage.style.display !== 'none') {
+        // This re-runs the detail builder with the new 'count' from storage
+        if (typeof openDetail === 'function') openDetail(name);
+    }
 }
 
 // 2. THE VISUALS: Draws the log with sighting counts
