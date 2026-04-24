@@ -1,334 +1,135 @@
-/* === 1. GLOBAL & MOBILE DEFAULTS === */
-html, body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden;
-    background-color: #02050c;
-    font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-    color: #fff;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-tap-highlight-color: transparent;
+/* --- BASE RESET --- */
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body { 
+    width: 100%; 
+    margin: 0; 
+    padding: 0; 
+    overflow-x: hidden; /* Removes the horizontal scroll bar */
+    background: #02050c; 
+    color: #fff; 
+    font-family: -apple-system, sans-serif; 
 }
 
-body {
-    padding: env(safe-area-inset-top) 15px 120px 15px;
-    -webkit-font-smoothing: antialiased;
+body { 
+    padding: env(safe-area-inset-top) 15px 100px 15px; 
+    user-select: none; 
 }
 
-/* This ensures the badge stays INSIDE this box */
-.detail-image-container {
-    position: relative; 
-    width: 100%;
-    height: 300px; /* Or 40vh */
-    overflow: hidden;
-    background: #1a1d24;
+/* --- HEADER & NAVIGATION --- */
+.header { position: sticky; top: 0; z-index: 100; background: #02050c; padding: 15px 0; text-align: center; }
+h1 { color: #4da3ff; font-size: 24px; margin: 10px 0; }
+
+#searchBar { 
+    width: 100%; padding: 12px; border-radius: 10px; border: none; 
+    background: #1a1d24; color: white; margin-bottom: 10px; font-size: 16px; 
 }
 
-.detail-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.filter-container { 
+    display: flex; overflow-x: auto; gap: 8px; padding-bottom: 10px; 
+    scrollbar-width: none; -webkit-overflow-scrolling: touch; 
 }
-
-/* Ensure this is exactly like this */
-.status-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    z-index: 9999; /* Higher than the image */
-    background: rgba(0,0,0,0.8);
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    border: 1px solid; /* Color comes from JS */
-}
-
-
-/* === 2. HEADER & STICKY CONTROLS === */
-.header {
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    background: #02050c;
-    padding: 20px 0 15px 0;
-    text-align: center;
-}
-
-h1 {
-    color: #4da3ff;
-    margin: 10px 0;
-    font-size: 28px;
-}
-
-#searchBar {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    border: none;
-    border-radius: 12px;
-    background: #1a1d24;
-    color: white;
-    margin-bottom: 15px;
-    outline: none;
-}
-
-/* Sort Dropdowns */
-#sortSelect, #logSortSelect {
-    background: #1a1d24;
-    color: #4da3ff;
-    border: 1px solid #1a3a5f;
-    padding: 10px;
-    border-radius: 10px;
-    width: 100%;
-    font-weight: 600;
-    margin-bottom: 10px;
-}
-
-.log-controls {
-    display: flex;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.reset-btn {
-    background: #2c2c2e;
-    color: #ff453a;
-    border: 1px solid #3a3a3c;
-    border-radius: 8px;
-    padding: 10px 15px;
-    font-size: 13px;
-}
-
-/* === 3. FILTER CHIPS === */
-.filter-container {
-    display: flex;
-    overflow-x: auto;
-    gap: 10px;
-    padding: 5px 0 10px 0;
-}
-
 .filter-container::-webkit-scrollbar { display: none; }
 
-.filter-btn {
-    background: #1a1d24;
-    color: #8e8e93;
-    border: none;
-    padding: 8px 18px;
-    border-radius: 20px;
-    white-space: nowrap;
-    font-size: 13px;
-    font-weight: 600;
+.filter-btn, .log-filter-btn { 
+    flex: 0 0 auto; background: #1a1d24; color: #8e8e93; border: none; 
+    padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; 
+}
+.filter-btn.active, .log-filter-btn.active { background: #4da3ff; color: white; }
+
+.sort-container select, .log-controls select { 
+    background: #1a1d24; color: #4da3ff; border: 1px solid #1a3a5f; 
+    padding: 10px; border-radius: 10px; width: 100%; font-weight: 600; 
 }
 
-.filter-btn.active {
-    background: #4da3ff;
-    color: white;
-}
+/* --- CARDS & GRID --- */
+.grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-/* === 4. THE GRID & CARDS === */
-.grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-}
-
-.card {
-    background: #11141b;
-    border-radius: 15px;
-    overflow: hidden;
-    position: relative;
-}
-
-.rarity-dot {
-    position: absolute;
-    top: 8px; left: 8px;
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    border: 1.5px solid white;
-    z-index: 5;
+.card { 
+    background: #11141b; border-radius: 12px; overflow: hidden; 
+    position: relative; border: 1px solid #1a1d24; 
 }
 
 .fish-img {
     width: 100%;
-    height: 110px;
+    height: auto;
+    aspect-ratio: 3 / 2; /* Slightly taller for the small grid cards */
     object-fit: cover;
-    background: #1a1d24;
 }
 
-.card-info { padding: 10px; }
+.card-info { padding: 8px; }
+.fish-name { font-size: 13px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.fish-name {
-    font-weight: bold; font-size: 14px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+.category-row { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; }
+.category { font-size: 9px; color: #8e8e93; text-transform: uppercase; }
+
+/* SEEN BADGE */
+.seen-badge { 
+    width: 22px; height: 22px; background: #1a1d24; color: #555; 
+    border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+    font-size: 10px; font-weight: bold; border: 1px solid #333; 
+}
+.seen-badge.active { 
+    background: #4da3ff; color: white; border-color: #4da3ff; 
+    box-shadow: 0 0 10px rgba(77, 163, 255, 0.4); 
 }
 
-.category { font-size: 9px; color: #aaa; text-transform: uppercase; margin-bottom: 8px; }
-
-.danger-row { display: flex; gap: 2px; margin-bottom: 8px; }
-
-.status-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: rgba(0,0,0,0.85); /* Slightly darker for better contrast */
-    padding: 6px 12px;
-    border-radius: 6px;
-    font-size: 11px;
-    font-weight: bold;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    border: 1px solid; /* The color will be injected by JavaScript */
-    z-index: 10;
-    backdrop-filter: blur(4px); /* Adds a premium glassy look */
-}
-/* === 5. DETAIL PAGE (KING OF THE HILL) === */
-#detail-page {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: #02050c;
-    z-index: 5000;
-    overflow-y: auto;
-    animation: slideUp 0.3s ease-out;
+.log-btn { 
+    width: 100%; background: #4da3ff; color: white; border: none; 
+    padding: 8px; border-radius: 8px; font-size: 11px; font-weight: bold; margin-top: 8px;
 }
 
-.back-btn {
-    background: none;
-    border: none;
-    color: #4da3ff;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 15px;
-}
+.rarity-dot { position: absolute; top: 5px; left: 5px; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white; z-index: 2; }
 
-.detail-img { width: 100%; height: 300px; object-fit: cover; }
-
-.detail-info { padding: 20px; padding-bottom: 120px; }
-
-.specs-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin: 20px 0;
-    background: rgba(255,255,255,0.03);
-    padding: 15px;
-    border-radius: 12px;
-}
-
-.spec-item { display: flex; flex-direction: column; }
-.spec-item strong { font-size: 10px; color: #4da3ff; text-transform: uppercase; }
-.spec-item span { font-size: 15px; }
-
-.status-badge {
-    position: absolute;
-    top: 15px; right: 15px;
-    background: rgba(0,0,0,0.8);
-    color: #ffcc00;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    border: 1px solid #ffcc00;
-}
-
-.fun-fact-box {
-    margin-top: 20px;
-    padding: 15px;
-    background: rgba(77, 163, 255, 0.1);
-    border-left: 4px solid #4da3ff;
-    border-radius: 4px;
-}
-
-/* === 6. ACHIEVEMENT / TROPHY ROOM === */
-.achievement-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-    padding: 15px;
-}
-
-.ach-card {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 20px;
-    padding: 20px 10px;
-    text-align: center;
-}
-
-.ach-card.unlocked {
-    border-color: #2ecc71;
-    background: linear-gradient(145deg, rgba(46, 204, 113, 0.1), rgba(15, 17, 22, 0.4));
-}
-
-.ach-icon { font-size: 32px; margin-bottom: 8px; }
-.ach-info h3 { font-size: 13px; margin: 0; color: #fff; }
-
-/* === 7. BOTTOM NAVIGATION === */
-.bottom-nav {
-    position: fixed;
-    bottom: 0; left: 0; width: 100%;
-    height: 85px;
-    background: rgba(26, 29, 36, 0.9);
-    backdrop-filter: blur(20px);
-    display: flex;
-    justify-content: space-around;
-    padding-bottom: env(safe-area-inset-bottom);
-    z-index: 2000;
-    border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.nav-item { text-align: center; color: #8e8e93; padding-top: 15px; }
-.nav-item span { font-size: 24px; display: block; }
-.nav-item label { font-size: 10px; font-weight: bold; }
-.nav-item.active { color: #4da3ff; }
-
-/* === 8. TOAST NOTIFICATIONS === */
-#toast-container {
-    position: fixed;
-    bottom: 100px; left: 50%;
-    transform: translateX(-50%);
-    z-index: 9999;
-}
-
-.toast {
-    background: #2ecc71;
-    color: white;
-    padding: 12px 24px;
-    border-radius: 30px;
-    font-weight: bold;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-    animation: slideUpFade 2.5s ease-out forwards;
-}
-
-/* === 9. ANIMATIONS === */
-@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-@keyframes slideUpFade {
-    0% { opacity: 0; transform: translateY(20px); }
-    15% { opacity: 1; transform: translateY(0); }
-    85% { opacity: 1; transform: translateY(0); }
-    100% { opacity: 0; transform: translateY(-20px); }
-}
-
-.big-log-btn {
+/* --- DETAIL PAGE --- */
+.detail-img {
     width: 100%;
-    padding: 18px;
-    margin-top: 25px;
-    background: #007aff; /* iOS Blue */
-    color: white;
-    border: none;
-    border-radius: 16px;
-    font-size: 18px;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    box-shadow: 0 4px 15px rgba(0, 122, 255, 0.3);
-    transition: transform 0.1s;
+    height: auto; /* Removes the forced 250px height */
+    aspect-ratio: 16 / 9; /* Sets a standard wide-screen shape */
+    object-fit: cover; /* Ensures it fills the space beautifully without stretching */
+    border-radius: 12px;
+    display: block;
 }
 
-.big-log-btn:active {
-    transform: scale(0.96);
-    background: #0056b3;
+/* PROGRESS BAR (GREEN) */
+.progress-section { margin: 15px 0; }
+.progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #8e8e93; font-weight: bold; }
+.progress-bar-bg { height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: 4px; overflow: hidden; margin-top: 6px; }
+.progress-bar-fill { 
+    height: 100%; 
+    background: linear-gradient(90deg, #34c759, #32d74b); 
+    border-radius: 4px; 
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); 
+    box-shadow: 0 0 12px rgba(52, 199, 89, 0.3); 
 }
+
+.specs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; margin: 15px 0; }
+.spec-item strong { color: #8e8e93; margin-right: 4px; font-size: 11px; }
+.spec-item span { font-size: 12px; }
+
+.big-log-btn { width: 100%; padding: 15px; background: #007aff; border: none; border-radius: 12px; color: white; font-size: 16px; font-weight: bold; }
+
+/* --- TROPHY ROOM --- */
+.achievement-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 10px; padding: 10px 0; }
+.ach-card { background: #11141b; border-radius: 12px; padding: 15px; text-align: center; border: 1px solid #1a1d24; min-height: 120px; }
+.ach-icon { font-size: 24px; margin-bottom: 5px; }
+
+/* --- STATUS & FUN FACTS --- */
+.status-badge-inline { padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 11px; margin-left: 8px; border: 1px solid currentColor; }
+.CR { color: #ff3b30; } .EN { color: #ff9500; } .VU { color: #ffcc00; } .NT { color: #34c759; } .LC { color: #007aff; } .DD { color: #8e8e93; }
+
+.fun-fact-box { background: rgba(77, 163, 255, 0.1); padding: 15px; border-radius: 12px; border-left: 4px solid #4da3ff; margin: 20px 0; }
+.fun-fact-box small { color: #4da3ff; font-weight: bold; letter-spacing: 1px; }
+.fun-fact-box p { margin: 5px 0 0 0; font-size: 13px; font-style: italic; }
+
+/* --- BOTTOM NAV --- */
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: #1a1d24; display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); z-index: 1000; border-top: 1px solid #333; }
+.nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #8e8e93; }
+.nav-item.active { color: #4da3ff; }
+.nav-item span { font-size: 20px; }
+.nav-item label { font-size: 10px; font-weight: bold; }
+
+/* --- UTILS --- */
+#toast-container { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); z-index: 2000; }
+.toast { background: #2ecc71; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; }
+.danger-skulls { font-size: 10px; margin-left: 5px; opacity: 0.7; }

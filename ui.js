@@ -1,264 +1,121 @@
-// ==========================================
-// 1. UNIVERSAL HELPERS
-// ==========================================
-function showToast(message, icon = '📸') {
-    const container = document.getElementById('toast-container');
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.innerHTML = `<span>${icon}</span> ${message}`;
-    container.appendChild(toast);
-    setTimeout(() => { toast.remove(); }, 2500);
+const NAV_CATEGORIES = ['All', 'Shark', 'Ray', 'Mammal', 'Fish', 'Turtle', 'Cephalopod', 'Crustacean'];
+
+function buildFilterBars() {
+    const dexBar = document.getElementById('dexFilters');
+    const logBar = document.getElementById('logFilters');
+    const makeBtns = (filterFunc, btnClass) => NAV_CATEGORIES.map(cat => `<button class="${btnClass} ${cat==='All'?'active':''}" onclick="${filterFunc}('${cat}')">${cat}</button>`).join('');
+    if(dexBar) dexBar.innerHTML = makeBtns('filterByCategory', 'filter-btn');
+    if(logBar) logBar.innerHTML = makeBtns('filterLogByCategory', 'log-filter-btn');
 }
 
-function getColor(rarity) {
-    const colors = {
-        common: '#8e8e93', uncommon: '#34c759',
-        rare: '#007aff', epic: '#af52de', legendary: '#ffcc00'
-    };
-    return colors[rarity] || '#8e8e93';
-}
-
-function getSpeciesImage(fish) {
-    // DIAGNOSTIC ALERT A: See what the helper is receiving
-    if (fish && fish.name === "Orca") {
-        console.log("Helper processing Orca. Property img is:", fish.img);
-    }
-
-    // FORCING THE ORCA IMAGE MANUALLY TO TEST KODER
-    if (fish && fish.name === "Orca") {
-        return "https://images.unsplash.com/photo-1557613146-59000cc01285?q=80&w=1000";
-    }
-    
-    if (fish && fish.img) return fish.img;
-    return `https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg`;
-}
-
-function getStatusLabel(code) {
-    const statuses = {
-        'LC': { label: 'Least Concern', color: '#2ecc71' },
-        'NT': { label: 'Near Threatened', color: '#f1c40f' },
-        'VU': { label: 'Vulnerable', color: '#e67e22' },
-        'EN': { label: 'Endangered', color: '#e74c3c' },
-        'CR': { label: 'Critically Endangered', color: '#96281b' },
-        'DD': { label: 'Data Deficient', color: '#95a5a6' }
-    };
-    return statuses[code] || { label: 'Unknown', color: '#7f8c8d' };
-}
-
-function getDangerStars(level) {
-    let skulls = '';
-    for (let i = 1; i <= 5; i++) {
-        const color = i <= level ? (level <= 2 ? 'white' : (level === 3 ? '#ffcc00' : '#ff3b30')) : 'rgba(255,255,255,0.1)';
-        skulls += `<span style="color: ${color}; opacity: ${i <= level ? 1 : 0.2}">💀</span>`;
-    }
-    return skulls;
-}
-
-// ==========================================
-// 2. HAPTIC ENGINE
-// ==========================================
-const Haptics = {
-    light: () => { if (navigator.vibrate) navigator.vibrate(10); },
-    success: () => { if (navigator.vibrate) navigator.vibrate([20, 50, 20]); }
-};
-
-// ==========================================
-// 3. NAVIGATION LOGIC
-// ==========================================
 function showPage(pageId) {
-    try {
-        const pages = ['dex-page', 'log-page', 'detail-page', 'achievements-page'];
-        pages.forEach(p => {
-            const el = document.getElementById(p);
-            if (el) el.style.display = 'none';
-        });
-
-        const target = document.getElementById(`${pageId}-page`);
-        if (target) target.style.display = 'block';
-
-        const navItems = document.querySelectorAll('.nav-item');
-        const navBar = document.querySelector('.bottom-nav');
-        
-        if (navItems.length >= 3) {
-            if (pageId === 'detail') {
-                navItems[0].innerHTML = '<span>✕</span><label>Close</label>';
-                navItems[0].onclick = () => showPage('dex');
-                if (navBar) navBar.style.display = 'none';
-            } else {
-                navItems[0].innerHTML = '<span>🔍</span><label>Dex</label>';
-                navItems[0].onclick = () => showPage('dex');
-                if (navBar) navBar.style.display = 'flex';
-                navItems.forEach(item => item.classList.remove('active'));
-                if (pageId === 'dex') navItems[0].classList.add('active');
-                if (pageId === 'log') navItems[1].classList.add('active');
-                if (pageId === 'achievements') navItems[2].classList.add('active');
-            }
-        }
-
-        if (pageId === 'dex') render();
-        if (pageId === 'log') renderLog();
-        if (typeof updateStats === 'function') updateStats();
-        Haptics.light();
-    } catch (err) {
-        console.error("Navigation Error:", err);
-    }
+    ['dex-page', 'log-page', 'detail-page', 'achievements-page'].forEach(p => {
+        const el = document.getElementById(p);
+        if(el) el.style.display = 'none';
+    });
+    document.getElementById(`${pageId}-page`).style.display = 'block';
+    const navItems = document.querySelectorAll('.nav-item');
+    navItems.forEach(item => item.classList.remove('active'));
+    if (pageId === 'dex') navItems[0].classList.add('active');
+    if (pageId === 'log') { navItems[1].classList.add('active'); renderLog(); }
+    if (pageId === 'achievements') { navItems[2].classList.add('active'); renderAchievements(); }
+    if (pageId !== 'detail') window.scrollTo(0, 0);
 }
 
-// ==========================================
-// 4. DETAIL VIEW LOGIC
-// ==========================================
+function getSpeciesImage(f) {
+    if (f.img && f.img.startsWith('http')) return f.img;
+    // Clean name for local file: "Blue-Ringed Octopus" -> "blue_ringed_octopus"
+    const fileName = f.name.toLowerCase().replace(/ /g, '_').replace(/-/g, '_');
+    return `./assets/${fileName}.jpg`;
+}
+
+function render(data = speciesList) {
+    const grid = document.getElementById('fishGrid');
+    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
+    if(!grid) return;
+
+    grid.innerHTML = data.map(fish => {
+        const skulls = "💀".repeat(fish.danger || 0);
+        const logEntry = logged.find(l => l.name === fish.name);
+        const count = logEntry ? logEntry.count : 0;
+        const wiki = `https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg`;
+
+        return `
+        <div class="card" onclick="openDetail('${fish.name.replace(/'/g, "\\'")}')">
+            <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
+            <img src="${getSpeciesImage(fish)}" class="fish-img" onerror="this.onerror=null; this.src='${wiki}';">
+            <div class="card-info">
+                <div class="fish-name">${fish.name} <span class="danger-skulls">${skulls}</span></div>
+                <div class="category-row">
+                    <span class="category">${fish.cat}</span>
+                    <span class="seen-badge ${count > 0 ? 'active' : ''}">${count}</span>
+                </div>
+                <button class="log-btn" onclick="event.stopPropagation(); logFish('${fish.name.replace(/'/g, "\\'")}')">📸 Log</button>
+            </div>
+        </div>`;
+    }).join('');
+}
+
 function openDetail(name) {
     const fish = speciesList.find(f => f.name === name);
-    if (!fish) return;
-
-    // DIAGNOSTIC ALERT B: Check the specific Orca object when clicked
-    if (name === "Orca") {
-        alert("DETAIL ALERT:\nName: " + fish.name + "\nImg property: " + fish.img);
-    }
-
-    const statusInfo = getStatusLabel(fish.status);
+    if(!fish) return;
     const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
-    const record = logged.find(f => f.name === name);
-    const count = record ? record.count : 0;
-    
-    const imageSrc = getSpeciesImage(fish);
+    const count = (logged.find(l => l.name === fish.name) || {count:0}).count;
+    const progress = Math.min((count / 10) * 100, 100);
+    const wiki = `https://en.wikipedia.org/wiki/Special:FilePath/${fish.name.replace(/ /g, '_')}.jpg`;
 
-    const detailContent = document.getElementById('detailContent');
-    detailContent.innerHTML = `
+    document.getElementById('detailContent').innerHTML = `
         <div class="detail-card">
-            <div class="detail-image-container">
-                <img src="${imageSrc}" class="detail-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/400x300?text=Image+Not+Found';">
-                <div class="status-badge" style="border-color: ${statusInfo.color}; color: ${statusInfo.color}">
-                    ${statusInfo.label}
-                </div>
-            </div>
-            
+            <img src="${getSpeciesImage(fish)}" class="detail-img" onerror="this.onerror=null; this.src='${wiki}';">
             <div class="detail-info">
                 <div class="detail-header">
-                    <span class="rarity-tag" style="background:${getColor(fish.rarity)}">${fish.rarity}</span>
-                    <span class="rank-tag">Observations: ${count}</span>
+                    <span class="rarity-tag" style="background:${getColor(fish.rarity)}">${fish.rarity.toUpperCase()}</span>
+                    <span class="status-badge-inline ${fish.status}">${fish.status}</span>
                 </div>
                 <h1>${fish.name}</h1>
-                <p class="detail-cat">${fish.cat}</p>
+                <div class="progress-section">
+                    <div class="progress-label">Log Progress <span>${count}/10</span></div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${progress}%"></div></div>
+                </div>
                 <div class="specs-grid">
-                    <div class="spec-item"><strong>Size</strong><span>${fish.size || '??'}</span></div>
-                    <div class="spec-item"><strong>Temp</strong><span>${fish.temp || '??'}</span></div>
-                    <div class="spec-item"><strong>Time</strong><span>${fish.time || 'Day'}</span></div>
-                    <div class="spec-item"><strong>Depth</strong><span>${fish.depth || '??'}</span></div>
-                    <div class="spec-item"><strong>Est. Pop.</strong><span>${fish.pop || 'Unknown'}</span></div>
+                    <div class="spec-item"><strong>Size:</strong><span>${fish.size || '??'}</span></div>
+                    <div class="spec-item"><strong>Danger:</strong><span>${"💀".repeat(fish.danger || 0)}</span></div>
+                    <div class="spec-item"><strong>Depth:</strong><span>${fish.depth || '??'}</span></div>
+                    <div class="spec-item"><strong>Time:</strong><span>${fish.time || 'Day'}</span></div>
+                    <div class="spec-item"><strong>Season:</strong><span>${fish.season || 'All Year'}</span></div>
+                    <div class="spec-item"><strong>Diet:</strong><span>${fish.diet || '??'}</span></div>
                 </div>
-                <div class="detail-body">
-                    <h3>Field Notes</h3>
-                    <p>${fish.desc}</p>
-                    <div class="spotting-guide">
-                        <h3>Spotting Guide</h3>
-                        <ul>
-                            <li>📍 <b>Region:</b> ${fish.geo || 'Unknown'}</li>
-                            <li>🗓️ <b>Best Season:</b> ${fish.season || 'Year-round'}</li>
-                        </ul>
-                    </div>
-                    <div class="fun-fact-box">
-                        <small>DID YOU KNOW?</small>
-                        <p>${fish.funFact || 'No fun fact available.'}</p>
-                    </div>
-                    <div class="danger-box">
-                        <span>Threat Level:</span>
-                        <div class="stars">${getDangerStars(fish.danger || 1)}</div>
-                    </div>
-                </div>
-                <button class="big-log-btn" onclick="logFish('${fish.name.replace(/'/g, "\\'")}')">
-                    📸 Log This Observation
-                </button>
+                <p class="long-description">${fish.desc}</p>
+                <div class="fun-fact-box"><small>DID YOU KNOW?</small><p>${fish.funFact}</p></div>
+                <button class="big-log-btn" onclick="logFish('${fish.name.replace(/'/g, "\\'")}')">📸 Log Observation</button>
             </div>
-        </div>
-    `;
+        </div>`;
     showPage('detail');
 }
 
-// ==========================================
-// 5. RENDER DEX GRID
-// ==========================================
-function render() {
-    const grid = document.getElementById('fish-grid');
-    if (!grid) return;
-    grid.innerHTML = '';
-
-    speciesList.forEach(fish => {
-        // DIAGNOSTIC ALERT C: Check what the loop is seeing for Orca
-        if (fish.name === "Orca") {
-            console.log("RENDER loop found Orca. Image logic starting...");
-        }
-
-        const imageSrc = getSpeciesImage(fish);
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.onclick = () => openDetail(fish.name);
-        card.innerHTML = `
-            <div class="rarity-dot" style="background: ${getColor(fish.rarity)}"></div>
-            <img src="${imageSrc}" class="fish-img" onerror="this.onerror=null;this.src='https://via.placeholder.com/150?text=Check+Wiki';">
-            <div class="card-info">
-                <div class="fish-name">${fish.name}</div>
-                <div class="category">${fish.cat}</div>
-            </div>
-        `;
-        grid.appendChild(card);
+function handleSort() {
+    const v = document.getElementById('sortSelect').value;
+    const [prop, dir] = v.split('_');
+    const rMap = { legendary: 5, epic: 4, rare: 3, uncommon: 2, common: 1 };
+    let data = [...speciesList].sort((a, b) => {
+        let res = 0;
+        if (prop === 'name') res = a.name.localeCompare(b.name);
+        if (prop === 'rarity') res = (rMap[a.rarity] || 0) - (rMap[b.rarity] || 0);
+        return dir === 'desc' ? res * -1 : res;
     });
+    render(data);
 }
 
-// ==========================================
-// 6. RENDER LOG
-// ==========================================
-function renderLog() {
-    const logList = document.getElementById('log-list');
-    if (!logList) return;
-    logList.innerHTML = '';
-    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
-    if (logged.length === 0) {
-        logList.innerHTML = '<p style="text-align:center; padding:50px; opacity:0.5;">No observations logged yet.</p>';
-        return;
-    }
-    logged.forEach(entry => {
-        const fish = speciesList.find(s => s.name === entry.name);
-        if (!fish) return;
-        const imageSrc = getSpeciesImage(fish);
-        const item = document.createElement('div');
-        item.className = 'log-item';
-        item.style = "display:flex; gap:15px; background:#1a1d24; margin-bottom:10px; padding:10px; border-radius:12px; align-items:center;";
-        item.innerHTML = `
-            <img src="${imageSrc}" style="width:60px; height:60px; border-radius:8px; object-fit:cover;">
-            <div style="flex:1">
-                <div style="font-weight:bold; color:white;">${entry.name}</div>
-                <div style="font-size:12px; color:#4da3ff">Seen ${entry.count} times</div>
-            </div>
-            <button onclick="openDetail('${entry.name.replace(/'/g, "\\'")}')" style="background:#2c2c2e; border:none; color:white; padding:8px 12px; border-radius:8px;">View</button>
-        `;
-        logList.appendChild(item);
-    });
+function filterByCategory(cat) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.toggle('active', b.innerText === cat));
+    render(cat === 'All' ? speciesList : speciesList.filter(f => f.cat === cat));
 }
 
-// ==========================================
-// 7. STATS & QUICK LOG
-// ==========================================
-function updateStats() {
-    const logged = JSON.parse(localStorage.getItem('myAquaLog')) || [];
-    const counter = document.getElementById('statsCounter');
-    if (counter && typeof speciesList !== 'undefined') {
-        const total = speciesList.length;
-        const count = logged.length;
-        const percent = Math.round((count / total) * 100);
-        counter.innerHTML = `
-            <div class="stats-bar-bg"><div class="stats-bar-fill" style="width: ${percent}%"></div></div>
-            <span>Found: <b>${count}</b> / ${total} (${percent}%)</span>
-        `;
-    }
+function searchFish() { 
+    const t = document.getElementById('searchBar').value.toLowerCase(); 
+    render(speciesList.filter(f => f.name.toLowerCase().includes(t))); 
 }
 
-let pressTimer;
-function startPress(name) {
-    Haptics.light();
-    pressTimer = window.setTimeout(() => {
-        Haptics.success();
-        if (typeof logFish === "function") logFish(name);
-    }, 700);
-}
-function cancelPress() { clearTimeout(pressTimer); }
+function getColor(r) { const c = { legendary: '#ffcc00', epic: '#af52de', rare: '#007aff', uncommon: '#34c759', common: '#8e8e93' }; return c[r] || '#8e8e93'; }
+function updateStats() { const l = JSON.parse(localStorage.getItem('myAquaLog')) || []; const c = document.getElementById('statsCounter'); if (c) c.innerHTML = `Found: <b>${l.length}</b> / ${speciesList.length}`; }
+function showToast(m, i = '📸') { const c = document.getElementById('toast-container'); const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = `<span>${i}</span> ${m}`; c.appendChild(t); setTimeout(() => t.remove(), 2500); }
