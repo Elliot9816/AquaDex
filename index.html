@@ -14,29 +14,31 @@
         <div class="header">
             <h1>AquaDex</h1>
             <input type="text" id="searchBar" placeholder="Search species..." onkeyup="searchFish()">
+            
             <div class="filter-container" id="dexFilters"></div>
+            
             <div class="sort-container">
                 <select id="sortSelect" onchange="handleSort()">
                     <option value="name_asc">Name (A-Z)</option>
                     <option value="name_desc">Name (Z-A)</option>
                     <option value="size_desc">Size (Large-Small)</option>
                     <option value="size_asc">Size (Small-Large)</option>
-                    <option value="rarity_desc">Rarity (Legendary-Common)</option>
-                    <option value="rarity_asc">Rarity (Common-Legendary)</option>
-                    <option value="danger_desc">Danger (High-Low)</option>
-                    <option value="danger_asc">Danger (Low-High)</option>
-                    <option value="status_desc">IUCN Status (Risk)</option>
+                    <option value="rarity_desc">Rarity (High-Low)</option>
+                    <option value="rarity_asc">Rarity (Low-High)</option>
                 </select>
             </div>
         </div>
+        
         <div id="fishGrid" class="grid"></div>
     </div>
 
     <div id="log-page" style="display:none;">
         <div class="header">
             <h1>My Discoveries</h1>
-            <div id="statsCounter"></div> 
+            <div id="statsCounter" class="stats-banner"></div> 
+            
             <div class="filter-container" id="logFilters"></div>
+            
             <div class="log-controls">
                 <select id="logSortSelect" onchange="renderLog()">
                     <option value="date_desc">Date (Newest)</option>
@@ -44,6 +46,7 @@
                     <option value="count_desc">Sightings (Most)</option>
                     <option value="count_asc">Sightings (Least)</option>
                     <option value="name_asc">Name (A-Z)</option>
+                    <option value="name_desc">Name (Z-A)</option>
                 </select>
                 <button class="reset-btn" onclick="clearAllLogs()">Reset</button>
             </div>
@@ -57,16 +60,22 @@
     </div>
 
     <div id="detail-page" style="display:none;">
-        <div class="detail-nav-overlay">
-            <button class="close-detail" onclick="showPage('dex')">✕</button>
-        </div>
         <div id="detailContent"></div>
     </div>
 
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="showPage('dex')"><span>🔍</span><label>Dex</label></div>
-        <div class="nav-item" onclick="showPage('log')"><span>📸</span><label>Log</label></div>
-        <div class="nav-item" onclick="showPage('achievements')"><span>🏆</span><label>Trophies</label></div>
+        <div class="nav-item active" onclick="showPage('dex')" id="nav-dex">
+            <span class="nav-icon">🔍</span>
+            <label>Dex</label>
+        </div>
+        <div class="nav-item" onclick="showPage('log')" id="nav-log">
+            <span class="nav-icon">📸</span>
+            <label>Log</label>
+        </div>
+        <div class="nav-item" onclick="showPage('achievements')" id="nav-ach">
+            <span class="nav-icon">🏆</span>
+            <label>Trophies</label>
+        </div>
     </div>
 
     <div id="toast-container"></div>
@@ -80,7 +89,6 @@
             buildFilterBars(); 
             render(); 
             updateStats(); 
-            // PWA Service Worker
             if ('serviceWorker' in navigator) {
                 navigator.serviceWorker.register('./sw.js').catch(() => {});
             }

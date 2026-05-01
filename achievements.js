@@ -1,3 +1,57 @@
+(function injectAchievementStyles() {
+    const style = document.createElement('style');
+    style.innerHTML = `
+        /* ACHIEVEMENT GRID */
+        #achievementsGrid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 15px;
+            background: #0b1622;
+        }
+
+        .ach-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px 10px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .ach-card.unlocked {
+            background: linear-gradient(145deg, rgba(64, 224, 208, 0.15), rgba(0, 122, 255, 0.05));
+            border: 1px solid rgba(64, 224, 208, 0.4);
+        }
+
+        .ach-card.locked {
+            filter: grayscale(1) opacity(0.5);
+        }
+
+        .ach-icon-wrap { font-size: 2.2rem; margin-bottom: 12px; height: 50px; display: flex; align-items: center; }
+
+        .ach-type-tag { font-size: 0.6rem; text-transform: uppercase; color: #40E0D0; margin-bottom: 5px; font-weight: 800; }
+
+        .ach-info h3 { font-size: 0.85rem; margin: 0 0 6px 0; color: #fff; line-height: 1.2; }
+
+        .ach-info p { font-size: 0.7rem; color: #888; margin: 0; line-height: 1.3; }
+
+        .ach-ribbon {
+            position: absolute; top: 6px; right: -18px; background: #40E0D0; color: #0b1622;
+            font-size: 0.5rem; font-weight: 900; padding: 2px 20px; transform: rotate(45deg);
+        }
+
+        @media (min-width: 768px) { #achievementsGrid { grid-template-columns: repeat(4, 1fr); } }
+    `;
+    document.head.appendChild(style);
+})();
+
+
 // ==========================================
 // 1. DATA DEFINITIONS
 // ==========================================
@@ -77,10 +131,17 @@ function renderAchievements() {
         const isUnlocked = ach.check(logs);
         const displayIcon = isUnlocked ? (ach.icon || '🏅') : '🔒';
         
+        // Label logic
+        let label = "General";
+        if (ach.id.startsWith('rarity')) label = "Rarity";
+        else if (ach.id.includes('expert')) label = "Specialist";
+
         return `
             <div class="ach-card ${isUnlocked ? 'unlocked' : 'locked'}">
-                <div class="ach-icon" style="opacity: ${isUnlocked ? '1' : '0.3'}">${displayIcon}</div>
+                ${isUnlocked ? '<div class="ach-ribbon">DONE</div>' : ''}
+                <div class="ach-icon-wrap">${displayIcon}</div>
                 <div class="ach-info">
+                    <div class="ach-type-tag">${label}</div>
                     <h3>${ach.title}</h3>
                     <p>${ach.desc}</p>
                 </div>
